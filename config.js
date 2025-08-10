@@ -6,7 +6,7 @@ const config = {
     development: {
         host: '0.0.0.0',
         port: 8080,
-        allowedOrigins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://192.168.1.37:8080']
+        allowedOrigins: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://192.168.1.37:8080', 'http://172.20.10.3:8080']
     },
     
     // Production settings (when deployed)
