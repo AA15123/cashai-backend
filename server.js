@@ -7,7 +7,7 @@ const session = require('express-session');
 const config = require('./config');
 require('dotenv').config();
 const db = require('./database'); // Import the database module
-const { passport, generateToken, verifyToken } = require('./config/auth');
+const { generateToken, verifyToken } = require('./config/auth');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -26,8 +26,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: { secure: false } // Set to true in production with HTTPS
 }));
-app.use(passport.initialize());
-app.use(passport.session());
+// Passport middleware removed for basic Plaid integration
 
 // Plaid configuration
 const configuration = new Configuration({
