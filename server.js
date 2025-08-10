@@ -62,7 +62,6 @@ app.post('/api/create-link-token', async (req, res) => {
         const products = ['auth']; // Test with auth only first
         
         const request = {
-            client_user_id: 'user-id',
             client_name: 'CashAI',
             products: products,
             country_codes: ['US'],
