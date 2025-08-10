@@ -31,7 +31,7 @@ app.use(session({
 
 // Plaid configuration
 const configuration = new Configuration({
-    basePath: PlaidEnvironments[process.env.PLAID_ENV],
+    basePath: PlaidEnvironments.sandbox, // Temporarily switch to sandbox for testing
     baseOptions: {
         headers: {
             'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
