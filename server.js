@@ -177,44 +177,8 @@ app.get('/dashboard', async (req, res) => {
   }
 });
 
-// Authentication routes
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-app.get('/auth/google/callback', 
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    (req, res) => {
-        // Generate JWT token
-        const token = generateToken(req.user);
-        
-        // Redirect to iOS app with token
-        res.redirect(`cashai://auth?token=${token}`);
-    }
-);
-
-app.get('/auth/apple', passport.authenticate('apple'));
-
-app.get('/auth/apple/callback',
-    passport.authenticate('apple', { failureRedirect: '/login' }),
-    (req, res) => {
-        // Generate JWT token
-        const token = generateToken(req.user);
-        
-        // Redirect to iOS app with token
-        res.redirect(`cashai://auth?token=${token}`);
-    }
-);
-
-// Protected route example
-app.get('/api/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
-    res.json({
-        user: {
-            id: req.user.id,
-            email: req.user.email,
-            name: req.user.name,
-            loginMethod: req.user.login_method
-        }
-    });
-});
+// Authentication routes removed for basic Plaid integration
+// These will be added back later when implementing full authentication
 
 // Verify token endpoint
 app.post('/api/verify-token', (req, res) => {
