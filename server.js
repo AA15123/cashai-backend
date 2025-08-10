@@ -59,7 +59,7 @@ app.get('/api/users', async (req, res) => {
 // Create Link Token endpoint
 app.post('/api/create-link-token', async (req, res) => {
     try {
-        const products = (process.env.PLAID_PRODUCTS || 'auth,transactions').split(',');
+        const products = ['auth']; // Test with auth only first
         
         const request = {
             client_user_id: 'user-id',
