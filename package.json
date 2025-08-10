@@ -1,0 +1,32 @@
+{
+  "name": "cashai-backend",
+  "version": "1.0.0",
+  "description": "CashAI Backend with Plaid Integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "plaid": "^18.0.0",
+    "dotenv": "^16.3.1",
+    "express-handlebars": "^7.1.2",
+    "express-session": "^1.17.3",
+    "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-apple": "^2.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["plaid", "banking", "ios", "cashai"],
+  "author": "CashAI Team",
+  "license": "MIT"
+}
