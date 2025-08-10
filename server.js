@@ -74,7 +74,48 @@ app.post('/api/create-link-token', async (req, res) => {
         res.json({ link_token: response.data.link_token });
     } catch (error) {
         console.error('Error creating link token:', error.message);
-        res.status(500).json({ error: 'Failed to create link token' });
+        console.error('Full error:', JSON.stringify(error, null, 2));
+        res.status(500).json({ 
+            error: 'Failed to create link token',
+            details: error.message 
+        });
+    }
+});
+
+// Test endpoint for Sandbox
+app.post('/api/test-sandbox', async (req, res) => {
+    try {
+        // Temporarily switch to sandbox
+        const sandboxClient = new PlaidApi(
+            new Configuration({
+                basePath: PlaidEnvironments.sandbox,
+                apiKey: {
+                    clientId: process.env.PLAID_CLIENT_ID,
+                    secret: process.env.PLAID_SECRET,
+                },
+            })
+        );
+        
+        const request = {
+            client_user_id: 'user-id',
+            client_name: 'CashAI',
+            products: ['auth'],
+            country_codes: ['US'],
+            language: 'en'
+        };
+        
+        const response = await sandboxClient.linkTokenCreate(request);
+        res.json({ 
+            success: true, 
+            link_token: response.data.link_token,
+            message: 'Sandbox test successful'
+        });
+    } catch (error) {
+        console.error('Sandbox test error:', error.message);
+        res.status(500).json({ 
+            error: 'Sandbox test failed',
+            details: error.message 
+        });
     }
 });
 
