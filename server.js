@@ -71,14 +71,16 @@ app.post('/api/create-link-token', async (req, res) => {
         };
 
         console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
-        console.log('🔍 Environment:', process.env.PLAID_ENV);
+        console.log('🔍 Environment: sandbox (forced)');
         console.log('🔍 Products:', products);
 
         const response = await plaidClient.linkTokenCreate(request);
         res.json({ link_token: response.data.link_token });
     } catch (error) {
         console.error('Error creating link token:', error.message);
-        console.error('Full error:', JSON.stringify(error, null, 2));
+        console.error('Plaid error message:', error.response?.data?.error_message || 'No specific error message');
+        console.error('Plaid error code:', error.response?.data?.error_code || 'No error code');
+        console.error('Full Plaid response:', JSON.stringify(error.response?.data, null, 2));
         res.status(500).json({ 
             error: 'Failed to create link token',
             details: error.message 
