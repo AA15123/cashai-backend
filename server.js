@@ -70,6 +70,10 @@ app.post('/api/create-link-token', async (req, res) => {
             redirect_uri: 'https://cashai-backend.onrender.com/plaid-oauth-callback'
         };
 
+        console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
+        console.log('🔍 Environment:', process.env.PLAID_ENV);
+        console.log('🔍 Products:', products);
+
         const response = await plaidClient.linkTokenCreate(request);
         res.json({ link_token: response.data.link_token });
     } catch (error) {
