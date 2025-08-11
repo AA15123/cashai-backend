@@ -73,7 +73,7 @@ app.post('/api/create-link-token', async (req, res) => {
         };
 
         console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
-        console.log('🔍 Environment: sandbox (forced)');
+        console.log('🔍 Environment:', process.env.PLAID_ENV);
         console.log('🔍 Products:', products);
 
         const response = await plaidClient.linkTokenCreate(request);
