@@ -211,10 +211,66 @@ app.get('/plaid-oauth-callback', (req, res) => {
     
     if (error) {
         console.error('❌ OAuth error:', error);
-        res.json({ error: error });
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Connection Error</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                    .container { text-align: center; padding: 20px; }
+                    .icon { font-size: 48px; margin-bottom: 20px; }
+                    .title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+                    .message { font-size: 16px; opacity: 0.8; margin-bottom: 20px; }
+                    .button { background: #007AFF; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="icon">❌</div>
+                    <div class="title">Connection Failed</div>
+                    <div class="message">There was an error connecting your bank account.</div>
+                    <button class="button" onclick="window.close()">Close</button>
+                </div>
+            </body>
+            </html>
+        `);
     } else {
         console.log('✅ OAuth successful, state:', oauth_state_id);
-        res.json({ success: true, oauth_state_id });
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Bank Connected!</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                    .container { text-align: center; padding: 20px; }
+                    .icon { font-size: 48px; margin-bottom: 20px; }
+                    .title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+                    .message { font-size: 16px; opacity: 0.8; margin-bottom: 20px; }
+                    .spinner { width: 20px; height: 20px; border: 2px solid #333; border-top: 2px solid #007AFF; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+                <script>
+                    // Auto-close after 3 seconds
+                    setTimeout(() => {
+                        window.close();
+                    }, 3000);
+                </script>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="icon">✅</div>
+                    <div class="title">Bank Connected!</div>
+                    <div class="message">Your bank account has been successfully connected.</div>
+                    <div class="spinner"></div>
+                    <div class="message">Redirecting back to CashAI...</div>
+                </div>
+            </body>
+            </html>
+        `);
     }
 });
 
