@@ -42,6 +42,9 @@ const configuration = new Configuration({
 
 const plaidClient = new PlaidApi(configuration);
 
+// Global variable to store access token (in production, this should be in a database)
+let accessToken = null;
+
 // Routes
 app.get('/', (req, res) => {
   res.json({ message: 'CashAI Backend is running!' });
@@ -138,6 +141,10 @@ app.post('/api/exchange-public-token', async (req, res) => {
 
         const response = await plaidClient.itemPublicTokenExchange({ public_token });
         console.log('✅ Exchange successful, access token:', response.data.access_token ? 'present' : 'missing');
+        
+        // Store the access token globally for future API calls
+        accessToken = response.data.access_token;
+        console.log('🔐 Access token stored globally:', accessToken ? 'present' : 'missing');
         
         res.json({ 
             access_token: response.data.access_token,
