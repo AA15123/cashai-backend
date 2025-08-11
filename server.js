@@ -352,13 +352,17 @@ app.get('/plaid-oauth-callback', (req, res) => {
                 <script>
                     // Auto-close after 3 seconds
                     setTimeout(() => {
-                        // Try multiple methods to close/redirect
-                        try {
-                            window.close();
-                        } catch (e) {
-                            // If window.close() fails, try to redirect
-                            window.location.href = 'cashai://return';
-                        }
+                        // Try to redirect to iOS app first
+                        window.location.href = 'cashai://success';
+                        
+                        // Fallback: try to close the window
+                        setTimeout(() => {
+                            try {
+                                window.close();
+                            } catch (e) {
+                                console.log('Could not close window');
+                            }
+                        }, 1000);
                     }, 3000);
                 </script>
             </head>
