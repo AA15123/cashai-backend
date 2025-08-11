@@ -32,10 +32,10 @@ app.use(session({
 // Plaid configuration
 const configuration = new Configuration({
                 basePath: process.env.PLAID_ENV === 'production' ? PlaidEnvironments.production : PlaidEnvironments.sandbox,
-    baseOptions: {
-        headers: {
-            'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
-            'PLAID-SECRET': process.env.PLAID_SECRET,
+  baseOptions: {
+    headers: {
+      'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+      'PLAID-SECRET': process.env.PLAID_SECRET,
         }
     }
 });
@@ -44,7 +44,7 @@ const plaidClient = new PlaidApi(configuration);
 
 // Routes
 app.get('/', (req, res) => {
-    res.json({ message: 'CashAI Backend is running!' });
+  res.json({ message: 'CashAI Backend is running!' });
 });
 
 app.get('/api/users', async (req, res) => {
@@ -58,17 +58,17 @@ app.get('/api/users', async (req, res) => {
 
 // Create Link Token endpoint
 app.post('/api/create-link-token', async (req, res) => {
-    try {
+  try {
         const products = ['auth']; // Test with auth only first
         
-        const request = {
+    const request = {
             user: {
                 client_user_id: 'user-id'
             },
-            client_name: 'CashAI',
+      client_name: 'CashAI',
             products: products,
-            country_codes: ['US'],
-            language: 'en',
+      country_codes: ['US'],
+      language: 'en',
             redirect_uri: 'https://cashai-backend.onrender.com/plaid-oauth-callback'
         };
 
@@ -118,7 +118,7 @@ app.post('/api/test-sandbox', async (req, res) => {
             link_token: response.data.link_token,
             message: 'Sandbox test successful'
         });
-    } catch (error) {
+  } catch (error) {
         console.error('Sandbox test error:', error.message);
         res.status(500).json({ 
             error: 'Sandbox test failed',
@@ -130,7 +130,7 @@ app.post('/api/test-sandbox', async (req, res) => {
 // Exchange Public Token endpoint
 app.post('/api/exchange-public-token', async (req, res) => {
     try {
-        const { public_token } = req.body;
+  const { public_token } = req.body;
         
         if (!public_token) {
             return res.status(400).json({ error: 'public_token is required' });
@@ -487,10 +487,10 @@ app.get('/api/accounts', async (req, res) => {
         
         console.log('✅ Real accounts fetched successfully');
         res.json({ accounts: accountsResponse.data.accounts });
-    } catch (error) {
+  } catch (error) {
         console.error('❌ Error fetching accounts:', error);
         res.status(500).json({ error: 'Failed to fetch accounts' });
-    }
+  }
 });
 
 // Get transactions endpoint
@@ -559,22 +559,22 @@ app.get('/api/transactions', async (req, res) => {
         }
         
         // Get the current date and 30 days ago
-        const endDate = new Date().toISOString().split('T')[0];
+    const endDate = new Date().toISOString().split('T')[0];
         const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-        
+
         // Fetch real transactions from Plaid
         const transactionsResponse = await plaid.transactionsGet({
-            access_token: accessToken,
-            start_date: startDate,
-            end_date: endDate,
-            options: {
+      access_token: accessToken,
+      start_date: startDate,
+      end_date: endDate,
+      options: {
                 include_personal_finance_category: true
             }
         });
         
         console.log('✅ Real transactions fetched successfully');
         res.json({ transactions: transactionsResponse.data.transactions });
-    } catch (error) {
+  } catch (error) {
         console.error('❌ Error fetching transactions:', error);
         res.status(500).json({ error: 'Failed to fetch transactions' });
     }
