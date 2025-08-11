@@ -242,114 +242,145 @@ app.get('/plaid-oauth-callback', (req, res) => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Bank Connected!</title>
+                <title>Bank Connected</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <style>
-                    body { 
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-                        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); 
-                        color: #ffffff; 
-                        margin: 0; 
-                        padding: 0; 
-                        height: 100vh; 
-                        display: flex; 
-                        justify-content: center; 
-                        align-items: center; 
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
                     }
-                    .container { 
-                        text-align: center; 
-                        padding: 40px 20px; 
-                        max-width: 400px; 
-                        width: 100%; 
+                    
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+                        background: #000000;
+                        color: #ffffff;
+                        height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 20px;
                     }
+                    
+                    .container {
+                        width: 100%;
+                        max-width: 400px;
+                        text-align: center;
+                    }
+                    
+                    .header {
+                        margin-bottom: 40px;
+                    }
+                    
+                    .app-name {
+                        font-size: 32px;
+                        font-weight: 700;
+                        color: #ffffff;
+                        margin-bottom: 8px;
+                    }
+                    
                     .success-card {
                         background: rgba(255, 255, 255, 0.05);
-                        border-radius: 20px;
-                        padding: 40px 30px;
-                        backdrop-filter: blur(10px);
+                        border-radius: 16px;
+                        padding: 40px 24px;
                         border: 1px solid rgba(255, 255, 255, 0.1);
-                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
                     }
-                    .icon { 
-                        font-size: 64px; 
-                        margin-bottom: 24px; 
-                        display: block;
+                    
+                    .success-icon {
+                        width: 60px;
+                        height: 60px;
+                        background: #34C759;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 24px;
+                        font-size: 28px;
                     }
-                    .title { 
-                        font-size: 28px; 
-                        font-weight: 700; 
-                        margin-bottom: 16px; 
-                        background: linear-gradient(45deg, #007AFF, #5856D6);
-                        -webkit-background-clip: text;
-                        -webkit-text-fill-color: transparent;
-                        background-clip: text;
+                    
+                    .title {
+                        font-size: 24px;
+                        font-weight: 600;
+                        color: #ffffff;
+                        margin-bottom: 12px;
                     }
-                    .message { 
-                        font-size: 18px; 
-                        opacity: 0.9; 
-                        margin-bottom: 32px; 
+                    
+                    .message {
+                        font-size: 16px;
+                        color: rgba(255, 255, 255, 0.8);
                         line-height: 1.5;
+                        margin-bottom: 32px;
                     }
-                    .progress-bar {
+                    
+                    .loading-container {
+                        margin-bottom: 24px;
+                    }
+                    
+                    .loading-text {
+                        font-size: 14px;
+                        color: rgba(255, 255, 255, 0.6);
+                        margin-bottom: 12px;
+                    }
+                    
+                    .loading-bar {
                         width: 100%;
-                        height: 4px;
+                        height: 3px;
                         background: rgba(255, 255, 255, 0.1);
                         border-radius: 2px;
                         overflow: hidden;
-                        margin-bottom: 20px;
                     }
-                    .progress-fill {
+                    
+                    .loading-fill {
                         height: 100%;
-                        background: linear-gradient(90deg, #007AFF, #5856D6);
+                        background: #007AFF;
                         border-radius: 2px;
-                        animation: progress 3s ease-in-out forwards;
+                        animation: loading 3s ease-in-out forwards;
                     }
-                    @keyframes progress {
+                    
+                    @keyframes loading {
                         0% { width: 0%; }
                         100% { width: 100%; }
                     }
+                    
                     .redirect-text {
                         font-size: 14px;
-                        opacity: 0.7;
+                        color: rgba(255, 255, 255, 0.5);
                         font-weight: 500;
-                    }
-                    .logo {
-                        font-size: 24px;
-                        font-weight: 700;
-                        margin-bottom: 40px;
-                        background: linear-gradient(45deg, #007AFF, #5856D6);
-                        -webkit-background-clip: text;
-                        -webkit-text-fill-color: transparent;
-                        background-clip: text;
                     }
                 </style>
                 <script>
-                    let progress = 0;
-                    const progressFill = document.querySelector('.progress-fill');
-                    
-                    // Update progress bar
-                    const interval = setInterval(() => {
-                        progress += 1;
-                        if (progress >= 100) {
-                            clearInterval(interval);
-                            setTimeout(() => {
-                                window.close();
-                            }, 500);
+                    // Auto-close after 3 seconds
+                    setTimeout(() => {
+                        // Try multiple methods to close/redirect
+                        try {
+                            window.close();
+                        } catch (e) {
+                            // If window.close() fails, try to redirect
+                            window.location.href = 'cashai://return';
                         }
-                    }, 30);
+                    }, 3000);
                 </script>
             </head>
             <body>
                 <div class="container">
-                    <div class="logo">CashAI</div>
+                    <div class="header">
+                        <div class="app-name">CashAI</div>
+                    </div>
+                    
                     <div class="success-card">
-                        <div class="icon">🎉</div>
-                        <div class="title">Bank Connected!</div>
-                        <div class="message">Your bank account has been successfully connected and your transactions are being loaded.</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill"></div>
+                        <div class="success-icon">✓</div>
+                        <div class="title">Bank Connected</div>
+                        <div class="message">Your bank account has been successfully connected. We're now loading your financial data.</div>
+                        
+                        <div class="loading-container">
+                            <div class="loading-text">Loading transactions...</div>
+                            <div class="loading-bar">
+                                <div class="loading-fill"></div>
+                            </div>
                         </div>
-                        <div class="redirect-text">Redirecting back to CashAI...</div>
+                        
+                        <div class="redirect-text">Returning to CashAI...</div>
                     </div>
                 </div>
             </body>
