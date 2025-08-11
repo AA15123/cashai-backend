@@ -441,6 +441,116 @@ app.post('/api/verify-token', (req, res) => {
     }
 });
 
+// Get accounts endpoint
+app.get('/api/accounts', async (req, res) => {
+    try {
+        console.log('🏦 Fetching accounts...');
+        
+        // For now, return sample account data
+        // In production, you would fetch this from Plaid using the access token
+        const accounts = [
+            {
+                account_id: 'sample-account-1',
+                name: 'Chase Checking',
+                type: 'depository',
+                subtype: 'checking',
+                mask: '1234',
+                balances: {
+                    available: 5000.00,
+                    current: 5000.00,
+                    limit: null
+                }
+            },
+            {
+                account_id: 'sample-account-2',
+                name: 'Chase Savings',
+                type: 'depository',
+                subtype: 'savings',
+                mask: '5678',
+                balances: {
+                    available: 15000.00,
+                    current: 15000.00,
+                    limit: null
+                }
+            }
+        ];
+        
+        console.log('✅ Accounts fetched successfully');
+        res.json({ accounts });
+    } catch (error) {
+        console.error('❌ Error fetching accounts:', error);
+        res.status(500).json({ error: 'Failed to fetch accounts' });
+    }
+});
+
+// Get transactions endpoint
+app.get('/api/transactions', async (req, res) => {
+    try {
+        console.log('💳 Fetching transactions...');
+        
+        // For now, return sample transaction data
+        // In production, you would fetch this from Plaid using the access token
+        const transactions = [
+            {
+                transaction_id: 'txn-1',
+                account_id: 'sample-account-1',
+                amount: 45.67,
+                date: '2024-08-11',
+                name: 'Starbucks',
+                category: ['Food and Drink', 'Restaurants'],
+                category_id: '13005000',
+                pending: false
+            },
+            {
+                transaction_id: 'txn-2',
+                account_id: 'sample-account-1',
+                amount: 89.99,
+                date: '2024-08-10',
+                name: 'Amazon.com',
+                category: ['Shopping', 'Online Shopping'],
+                category_id: '19013000',
+                pending: false
+            },
+            {
+                transaction_id: 'txn-3',
+                account_id: 'sample-account-1',
+                amount: 1200.00,
+                date: '2024-08-09',
+                name: 'Rent Payment',
+                category: ['Transfer', 'Payroll'],
+                category_id: '21010000',
+                pending: false
+            },
+            {
+                transaction_id: 'txn-4',
+                account_id: 'sample-account-1',
+                amount: 67.50,
+                date: '2024-08-08',
+                name: 'Shell Gas Station',
+                category: ['Transportation', 'Gas Stations'],
+                category_id: '22016000',
+                pending: false
+            },
+            {
+                transaction_id: 'txn-5',
+                account_id: 'sample-account-1',
+                amount: 25.00,
+                date: '2024-08-07',
+                name: 'Netflix',
+                category: ['Recreation', 'Streaming Services'],
+                category_id: '22016000',
+                pending: false
+            }
+        ];
+        
+        console.log('✅ Transactions fetched successfully');
+        res.json({ transactions });
+    } catch (error) {
+        console.error('❌ Error fetching transactions:', error);
+        res.status(500).json({ error: 'Failed to fetch transactions' });
+    }
+});
+
 // Start server
 app.listen(config.port || PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on port ${config.port || PORT}`);
