@@ -69,7 +69,7 @@ app.post('/api/create-link-token', async (req, res) => {
             products: products,
             country_codes: ['US'],
             language: 'en',
-            redirect_uri: 'cashai://plaid-oauth'
+            redirect_uri: 'https://cashai-backend.onrender.com/plaid-oauth-callback'
         };
 
         console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
@@ -211,12 +211,10 @@ app.get('/plaid-oauth-callback', (req, res) => {
     
     if (error) {
         console.error('❌ OAuth error:', error);
-        // Redirect to iOS app with error
-        res.redirect(`cashai://plaid-oauth?error=${encodeURIComponent(error)}`);
+        res.json({ error: error });
     } else {
         console.log('✅ OAuth successful, state:', oauth_state_id);
-        // Redirect to iOS app with success
-        res.redirect(`cashai://plaid-oauth?oauth_state_id=${oauth_state_id}`);
+        res.json({ success: true, oauth_state_id });
     }
 });
 
