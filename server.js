@@ -271,4 +271,4 @@ app.listen(config.port || PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on port ${config.port || PORT}`);
     console.log(`🌐 Server accessible at http://localhost:${config.port || PORT}`);
     console.log(`🔧 Environment: ${process.env.PLAID_ENV || 'development'}`);
-});
+});// Force redeploy
