@@ -211,10 +211,12 @@ app.get('/plaid-oauth-callback', (req, res) => {
     
     if (error) {
         console.error('❌ OAuth error:', error);
-        res.json({ error: error });
+        // Redirect to iOS app with error
+        res.redirect(`cashai://plaid-oauth-callback?error=${encodeURIComponent(error)}`);
     } else {
         console.log('✅ OAuth successful, state:', oauth_state_id);
-        res.json({ success: true, oauth_state_id });
+        // Redirect to iOS app with success
+        res.redirect(`cashai://plaid-oauth-callback?oauth_state_id=${oauth_state_id}`);
     }
 });
 
