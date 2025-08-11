@@ -245,28 +245,112 @@ app.get('/plaid-oauth-callback', (req, res) => {
                 <title>Bank Connected!</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <style>
-                    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-                    .container { text-align: center; padding: 20px; }
-                    .icon { font-size: 48px; margin-bottom: 20px; }
-                    .title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-                    .message { font-size: 16px; opacity: 0.8; margin-bottom: 20px; }
-                    .spinner { width: 20px; height: 20px; border: 2px solid #333; border-top: 2px solid #007AFF; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                    body { 
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); 
+                        color: #ffffff; 
+                        margin: 0; 
+                        padding: 0; 
+                        height: 100vh; 
+                        display: flex; 
+                        justify-content: center; 
+                        align-items: center; 
+                    }
+                    .container { 
+                        text-align: center; 
+                        padding: 40px 20px; 
+                        max-width: 400px; 
+                        width: 100%; 
+                    }
+                    .success-card {
+                        background: rgba(255, 255, 255, 0.05);
+                        border-radius: 20px;
+                        padding: 40px 30px;
+                        backdrop-filter: blur(10px);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                    }
+                    .icon { 
+                        font-size: 64px; 
+                        margin-bottom: 24px; 
+                        display: block;
+                    }
+                    .title { 
+                        font-size: 28px; 
+                        font-weight: 700; 
+                        margin-bottom: 16px; 
+                        background: linear-gradient(45deg, #007AFF, #5856D6);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                    }
+                    .message { 
+                        font-size: 18px; 
+                        opacity: 0.9; 
+                        margin-bottom: 32px; 
+                        line-height: 1.5;
+                    }
+                    .progress-bar {
+                        width: 100%;
+                        height: 4px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 2px;
+                        overflow: hidden;
+                        margin-bottom: 20px;
+                    }
+                    .progress-fill {
+                        height: 100%;
+                        background: linear-gradient(90deg, #007AFF, #5856D6);
+                        border-radius: 2px;
+                        animation: progress 3s ease-in-out forwards;
+                    }
+                    @keyframes progress {
+                        0% { width: 0%; }
+                        100% { width: 100%; }
+                    }
+                    .redirect-text {
+                        font-size: 14px;
+                        opacity: 0.7;
+                        font-weight: 500;
+                    }
+                    .logo {
+                        font-size: 24px;
+                        font-weight: 700;
+                        margin-bottom: 40px;
+                        background: linear-gradient(45deg, #007AFF, #5856D6);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                    }
                 </style>
                 <script>
-                    // Auto-close after 3 seconds
-                    setTimeout(() => {
-                        window.close();
-                    }, 3000);
+                    let progress = 0;
+                    const progressFill = document.querySelector('.progress-fill');
+                    
+                    // Update progress bar
+                    const interval = setInterval(() => {
+                        progress += 1;
+                        if (progress >= 100) {
+                            clearInterval(interval);
+                            setTimeout(() => {
+                                window.close();
+                            }, 500);
+                        }
+                    }, 30);
                 </script>
             </head>
             <body>
                 <div class="container">
-                    <div class="icon">✅</div>
-                    <div class="title">Bank Connected!</div>
-                    <div class="message">Your bank account has been successfully connected.</div>
-                    <div class="spinner"></div>
-                    <div class="message">Redirecting back to CashAI...</div>
+                    <div class="logo">CashAI</div>
+                    <div class="success-card">
+                        <div class="icon">🎉</div>
+                        <div class="title">Bank Connected!</div>
+                        <div class="message">Your bank account has been successfully connected and your transactions are being loaded.</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="redirect-text">Redirecting back to CashAI...</div>
+                    </div>
                 </div>
             </body>
             </html>
