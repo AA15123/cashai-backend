@@ -272,3 +272,4 @@ app.listen(config.port || PORT, '0.0.0.0', () => {
     console.log(`🌐 Server accessible at http://localhost:${config.port || PORT}`);
     console.log(`🔧 Environment: ${process.env.PLAID_ENV || 'development'}`);
 });
+// Force restart - Mon Aug 11 12:59:19 EDT 2025
