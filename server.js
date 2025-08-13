@@ -42,9 +42,6 @@ const configuration = new Configuration({
 
 const plaidClient = new PlaidApi(configuration);
 
-// Global variable to store access token (in production, this should be in a database)
-let accessToken = null;
-
 // Routes
 app.get('/', (req, res) => {
   res.json({ message: 'CashAI Backend is running!' });
@@ -64,14 +61,15 @@ app.post('/api/create-link-token', async (req, res) => {
   try {
         const products = ['auth']; // Test with auth only first
         
-    const request = {
+            const request = {
             user: {
                 client_user_id: 'user-id'
             },
       client_name: 'CashAI',
             products: products,
       country_codes: ['US'],
-      language: 'en'
+      language: 'en',
+            redirect_uri: 'cashai://success'
         };
 
         console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
@@ -138,18 +136,14 @@ app.post('/api/exchange-public-token', async (req, res) => {
             return res.status(400).json({ error: 'public_token is required' });
         }
 
-        const response = await plaidClient.itemPublicTokenExchange({ public_token });
+    const response = await plaidClient.itemPublicTokenExchange({ public_token });
         console.log('✅ Exchange successful, access token:', response.data.access_token ? 'present' : 'missing');
-        
-        // Store the access token globally for future API calls
-        accessToken = response.data.access_token;
-        console.log('🔐 Access token stored globally:', accessToken ? 'present' : 'missing');
         
         res.json({ 
             access_token: response.data.access_token,
             item_id: response.data.item_id 
         });
-    } catch (error) {
+  } catch (error) {
         console.error('❌ Exchange error:', error.message);
         res.status(500).json({ error: 'Failed to exchange public token' });
     }
@@ -190,22 +184,22 @@ app.post('/api/transactions', async (req, res) => {
         const end = new Date();
         const start = new Date();
         start.setDate(start.getDate() - 30);
-        
-        const request = {
+
+    const request = {
             access_token: access_token,
             start_date: start.toISOString().split('T')[0],
             end_date: end.toISOString().split('T')[0],
-            options: {
+      options: {
                 count: 100,
                 offset: 0
             }
-        };
+    };
 
-        const response = await plaidClient.transactionsGet(request);
+    const response = await plaidClient.transactionsGet(request);
         console.log('✅ Transactions fetched successfully');
         
-        res.json(response.data);
-    } catch (error) {
+    res.json(response.data);
+  } catch (error) {
         console.error('❌ Transactions error:', error.message);
         res.status(400).json({ error: error.message });
     }
@@ -452,51 +446,41 @@ app.get('/api/accounts', async (req, res) => {
     try {
         console.log('🏦 Fetching accounts...');
         
-        // Check if we have an access token
-        if (!accessToken) {
-            console.log('⚠️ No access token available, returning sample data');
-            const accounts = [
-                {
-                    account_id: 'sample-account-1',
-                    name: 'Chase Checking',
-                    type: 'depository',
-                    subtype: 'checking',
-                    mask: '1234',
-                    balances: {
-                        available: 5000.00,
-                        current: 5000.00,
-                        limit: null
-                    }
-                },
-                {
-                    account_id: 'sample-account-2',
-                    name: 'Chase Savings',
-                    type: 'depository',
-                    subtype: 'savings',
-                    mask: '5678',
-                    balances: {
-                        available: 15000.00,
-                        current: 15000.00,
-                        limit: null
-                    }
+        // For now, return sample account data
+        // In production, you would fetch this from Plaid using the access token
+        const accounts = [
+            {
+                account_id: 'sample-account-1',
+                name: 'Chase Checking',
+                type: 'depository',
+                subtype: 'checking',
+                mask: '1234',
+                balances: {
+                    available: 5000.00,
+                    current: 5000.00,
+                    limit: null
                 }
-            ];
-            console.log('✅ Sample accounts returned');
-            res.json({ accounts });
-            return;
-        }
+            },
+            {
+                account_id: 'sample-account-2',
+                name: 'Chase Savings',
+                type: 'depository',
+                subtype: 'savings',
+                mask: '5678',
+                balances: {
+                    available: 15000.00,
+                    current: 15000.00,
+                    limit: null
+                }
+            }
+        ];
         
-        // Fetch real accounts from Plaid
-        const accountsResponse = await plaid.accountsGet({
-            access_token: accessToken,
-        });
-        
-        console.log('✅ Real accounts fetched successfully');
-        res.json({ accounts: accountsResponse.data.accounts });
-  } catch (error) {
+        console.log('✅ Accounts fetched successfully');
+        res.json({ accounts });
+    } catch (error) {
         console.error('❌ Error fetching accounts:', error);
         res.status(500).json({ error: 'Failed to fetch accounts' });
-  }
+    }
 });
 
 // Get transactions endpoint
@@ -504,83 +488,64 @@ app.get('/api/transactions', async (req, res) => {
     try {
         console.log('💳 Fetching transactions...');
         
-        // Check if we have an access token
-        if (!accessToken) {
-            console.log('⚠️ No access token available, returning sample data');
-            const transactions = [
-                {
-                    transaction_id: 'txn-1',
-                    account_id: 'sample-account-1',
-                    amount: 45.67,
-                    date: '2024-08-11',
-                    name: 'Starbucks',
-                    category: ['Food and Drink', 'Restaurants'],
-                    category_id: '13005000',
-                    pending: false
-                },
-                {
-                    transaction_id: 'txn-2',
-                    account_id: 'sample-account-1',
-                    amount: 89.99,
-                    date: '2024-08-10',
-                    name: 'Amazon.com',
-                    category: ['Shopping', 'Online Shopping'],
-                    category_id: '19013000',
-                    pending: false
-                },
-                {
-                    transaction_id: 'txn-3',
-                    account_id: 'sample-account-1',
-                    amount: 1200.00,
-                    date: '2024-08-09',
-                    name: 'Rent Payment',
-                    category: ['Transfer', 'Payroll'],
-                    category_id: '21010000',
-                    pending: false
-                },
-                {
-                    transaction_id: 'txn-4',
-                    account_id: 'sample-account-1',
-                    amount: 67.50,
-                    date: '2024-08-08',
-                    name: 'Shell Gas Station',
-                    category: ['Transportation', 'Gas Stations'],
-                    category_id: '22016000',
-                    pending: false
-                },
-                {
-                    transaction_id: 'txn-5',
-                    account_id: 'sample-account-1',
-                    amount: 25.00,
-                    date: '2024-08-07',
-                    name: 'Netflix',
-                    category: ['Recreation', 'Streaming Services'],
-                    category_id: '22016000',
-                    pending: false
-                }
-            ];
-            console.log('✅ Sample transactions returned');
-            res.json({ transactions });
-            return;
-        }
-        
-        // Get the current date and 30 days ago
-    const endDate = new Date().toISOString().split('T')[0];
-        const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-        // Fetch real transactions from Plaid
-        const transactionsResponse = await plaid.transactionsGet({
-      access_token: accessToken,
-      start_date: startDate,
-      end_date: endDate,
-      options: {
-                include_personal_finance_category: true
+        // For now, return sample transaction data
+        // In production, you would fetch this from Plaid using the access token
+        const transactions = [
+            {
+                transaction_id: 'txn-1',
+                account_id: 'sample-account-1',
+                amount: 45.67,
+                date: '2024-08-11',
+                name: 'Starbucks',
+                category: ['Food and Drink', 'Restaurants'],
+                category_id: '13005000',
+                pending: false
+            },
+            {
+                transaction_id: 'txn-2',
+                account_id: 'sample-account-1',
+                amount: 89.99,
+                date: '2024-08-10',
+                name: 'Amazon.com',
+                category: ['Shopping', 'Online Shopping'],
+                category_id: '19013000',
+                pending: false
+            },
+            {
+                transaction_id: 'txn-3',
+                account_id: 'sample-account-1',
+                amount: 1200.00,
+                date: '2024-08-09',
+                name: 'Rent Payment',
+                category: ['Transfer', 'Payroll'],
+                category_id: '21010000',
+                pending: false
+            },
+            {
+                transaction_id: 'txn-4',
+                account_id: 'sample-account-1',
+                amount: 67.50,
+                date: '2024-08-08',
+                name: 'Shell Gas Station',
+                category: ['Transportation', 'Gas Stations'],
+                category_id: '22016000',
+                pending: false
+            },
+            {
+                transaction_id: 'txn-5',
+                account_id: 'sample-account-1',
+                amount: 25.00,
+                date: '2024-08-07',
+                name: 'Netflix',
+                category: ['Recreation', 'Streaming Services'],
+                category_id: '22016000',
+                pending: false
             }
-        });
+        ];
         
-        console.log('✅ Real transactions fetched successfully');
-        res.json({ transactions: transactionsResponse.data.transactions });
-  } catch (error) {
+        console.log('✅ Transactions fetched successfully');
+        res.json({ transactions });
+    } catch (error) {
         console.error('❌ Error fetching transactions:', error);
         res.status(500).json({ error: 'Failed to fetch transactions' });
     }
