@@ -68,8 +68,7 @@ app.post('/api/create-link-token', async (req, res) => {
       client_name: 'CashAI',
             products: products,
       country_codes: ['US'],
-      language: 'en',
-            redirect_uri: 'https://cashai-backend.onrender.com/plaid-oauth-callback'
+      language: 'en'
         };
 
         console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
