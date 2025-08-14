@@ -59,14 +59,19 @@ app.post('/api/create-link-token', async (req, res) => {
   try {
         const products = ['auth']; // Test with auth only first
         
-            const request = {
+        // Debug environment variables
+        console.log('🔍 PLAID_CLIENT_ID:', process.env.PLAID_CLIENT_ID ? 'SET' : 'NOT SET');
+        console.log('🔍 PLAID_SECRET:', process.env.PLAID_SECRET ? 'SET' : 'NOT SET');
+        console.log('🔍 PLAID_ENV:', process.env.PLAID_ENV);
+        
+        const request = {
             user: {
                 client_user_id: 'user-id'
             },
-      client_name: 'CashAI',
+            client_name: 'CashAI',
             products: products,
-      country_codes: ['US'],
-      language: 'en'
+            country_codes: ['US'],
+            language: 'en'
         };
 
         console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
