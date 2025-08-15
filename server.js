@@ -73,7 +73,8 @@ app.post('/api/create-link-token', async (req, res) => {
             client_name: 'CashAI',
             products: products,
             country_codes: ['US'],
-            language: 'en'
+            language: 'en',
+            redirect_uri: 'cashai://success'
         };
 
         console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
