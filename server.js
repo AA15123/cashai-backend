@@ -57,7 +57,7 @@ app.get('/api/users', async (req, res) => {
 // Create Link Token endpoint
 app.post('/api/create-link-token', async (req, res) => {
   try {
-        const products = ['auth']; // Test with auth only first
+        const products = ['auth', 'transactions']; // Add transactions for real data
         
         // Debug environment variables
         console.log('🔍 PLAID_CLIENT_ID:', process.env.PLAID_CLIENT_ID ? 'SET' : 'NOT SET');
@@ -77,6 +77,8 @@ app.post('/api/create-link-token', async (req, res) => {
         console.log('🔍 Request being sent to Plaid:', JSON.stringify(request, null, 2));
         console.log('🔍 Environment:', process.env.PLAID_ENV);
         console.log('🔍 Products:', products);
+        console.log('🔍 PLAID_CLIENT_ID length:', process.env.PLAID_CLIENT_ID?.length || 0);
+        console.log('🔍 PLAID_SECRET length:', process.env.PLAID_SECRET?.length || 0);
 
         const response = await plaidClient.linkTokenCreate(request);
         res.json({ link_token: response.data.link_token });
