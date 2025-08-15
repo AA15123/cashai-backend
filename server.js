@@ -29,14 +29,12 @@ app.use(session({
 
 // Passport middleware removed for basic Plaid integration
 
-// Plaid configuration - Temporarily force sandbox to get working
+// Plaid configuration
 const configuration = new Configuration({
-    basePath: PlaidEnvironments.sandbox, // Force sandbox for now
-    baseOptions: {
-        headers: {
-            'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
-            'PLAID-SECRET': process.env.PLAID_SECRET,
-        }
+    basePath: process.env.PLAID_ENV === 'production' ? PlaidEnvironments.production : PlaidEnvironments.sandbox,
+    apiKey: {
+        clientId: process.env.PLAID_CLIENT_ID,
+        secret: process.env.PLAID_SECRET,
     }
 });
 
