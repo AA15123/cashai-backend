@@ -32,9 +32,11 @@ app.use(session({
 // Plaid configuration
 const configuration = new Configuration({
     basePath: process.env.PLAID_ENV === 'production' ? PlaidEnvironments.production : PlaidEnvironments.sandbox,
-    apiKey: {
-        clientId: process.env.PLAID_CLIENT_ID,
-        secret: process.env.PLAID_SECRET,
+    baseOptions: {
+        headers: {
+            'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+            'PLAID-SECRET': process.env.PLAID_SECRET,
+        }
     }
 });
 
@@ -57,7 +59,7 @@ app.get('/api/users', async (req, res) => {
 // Create Link Token endpoint
 app.post('/api/create-link-token', async (req, res) => {
   try {
-        const products = ['auth', 'transactions']; // Add transactions for real data
+        const products = ['auth']; // Start with auth only to get working
         
         // Debug environment variables
         console.log('🔍 PLAID_CLIENT_ID:', process.env.PLAID_CLIENT_ID ? 'SET' : 'NOT SET');
