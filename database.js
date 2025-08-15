@@ -16,14 +16,14 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // Create tables
 function createTables() {
-                    // Users table
-                db.run(`CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    email TEXT UNIQUE,
-                    name TEXT,
+    // Users table
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE,
+        name TEXT,
                     login_method TEXT DEFAULT 'email',
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                )`);
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
 
     // Bank accounts table
     db.run(`CREATE TABLE IF NOT EXISTS bank_accounts (

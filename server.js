@@ -59,7 +59,7 @@ app.get('/api/users', async (req, res) => {
 // Create Link Token endpoint
 app.post('/api/create-link-token', async (req, res) => {
   try {
-        const products = ['auth']; // Start with auth only to get working
+        const products = ['auth', 'transactions']; // Enable both auth and transactions
         
         // Debug environment variables
         console.log('🔍 PLAID_CLIENT_ID:', process.env.PLAID_CLIENT_ID ? 'SET' : 'NOT SET');
@@ -116,8 +116,8 @@ app.post('/api/test-sandbox', async (req, res) => {
             products: ['auth'],
       country_codes: ['US'],
             language: 'en'
-        };
-        
+    };
+
         const response = await sandboxClient.linkTokenCreate(request);
         res.json({ 
             success: true, 
@@ -130,7 +130,7 @@ app.post('/api/test-sandbox', async (req, res) => {
             error: 'Sandbox test failed',
             details: error.message 
         });
-    }
+  }
 });
 
 // Exchange Public Token endpoint
@@ -152,7 +152,7 @@ app.post('/api/exchange-public-token', async (req, res) => {
   } catch (error) {
         console.error('❌ Exchange error:', error.message);
         res.status(500).json({ error: 'Failed to exchange public token' });
-    }
+  }
 });
 
 // Get Balances endpoint
@@ -465,7 +465,7 @@ app.get('/api/accounts', async (req, res) => {
     } catch (error) {
         console.error('❌ Error fetching accounts:', error);
         res.status(500).json({ error: 'Failed to fetch accounts' });
-    }
+  }
 });
 
 // Get transactions endpoint
