@@ -32,9 +32,11 @@ app.use(session({
 // Plaid configuration - Temporarily force sandbox to get working
 const configuration = new Configuration({
     basePath: PlaidEnvironments.sandbox, // Force sandbox for now
-    apiKey: {
-        clientId: process.env.PLAID_CLIENT_ID,
-        secret: process.env.PLAID_SECRET,
+    baseOptions: {
+        headers: {
+            'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+            'PLAID-SECRET': process.env.PLAID_SECRET,
+        }
     }
 });
 
