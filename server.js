@@ -56,9 +56,15 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-// Create Link Token endpoint
+// Create Link Token endpoint (User-specific)
 app.post('/api/create-link-token', async (req, res) => {
   try {
+        const { userId } = req.body; // Get user ID from request
+        
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+        
         const products = ['auth', 'transactions']; // Enable both auth and transactions
         
         // Debug environment variables
@@ -68,7 +74,7 @@ app.post('/api/create-link-token', async (req, res) => {
         
         const request = {
             user: {
-                client_user_id: 'user-id'
+                client_user_id: userId.toString() // Use actual user ID
             },
             client_name: 'CashAI',
             products: products,
@@ -133,21 +139,32 @@ app.post('/api/test-sandbox', async (req, res) => {
   }
 });
 
-// Exchange Public Token endpoint
+// Exchange Public Token endpoint (User-specific)
 app.post('/api/exchange-public-token', async (req, res) => {
     try {
-  const { public_token } = req.body;
+        const { public_token, userId } = req.body;
         
-        if (!public_token) {
-            return res.status(400).json({ error: 'public_token is required' });
+        if (!public_token || !userId) {
+            return res.status(400).json({ error: 'public_token and userId are required' });
         }
 
-    const response = await plaidClient.itemPublicTokenExchange({ public_token });
+        const response = await plaidClient.itemPublicTokenExchange({ public_token });
         console.log('✅ Exchange successful, access token:', response.data.access_token ? 'present' : 'missing');
         
+        // Save the bank account for this specific user
+        const accountId = await db.saveBankAccount(
+            userId,
+            response.data.item_id,
+            response.data.access_token,
+            'Connected Bank Account',
+            'checking'
+        );
+        
         res.json({ 
+            success: true,
             access_token: response.data.access_token,
-            item_id: response.data.item_id 
+            item_id: response.data.item_id,
+            account_id: accountId
         });
   } catch (error) {
         console.error('❌ Exchange error:', error.message);
@@ -428,8 +445,80 @@ app.get('/dashboard', async (req, res) => {
     }
 });
 
-// Authentication routes removed for basic Plaid integration
-// These will be added back later when implementing full authentication
+// ===== USER AUTHENTICATION ENDPOINTS =====
+
+// User registration endpoint
+app.post('/api/register', async (req, res) => {
+    try {
+        const { email, name, password } = req.body;
+        
+        if (!email || !name || !password) {
+            return res.status(400).json({ error: 'Email, name, and password are required' });
+        }
+        
+        // Check if user already exists
+        const existingUser = await db.getUserByEmail(email);
+        if (existingUser) {
+            return res.status(400).json({ error: 'User already exists' });
+        }
+        
+        // Create new user
+        const userId = await db.createUser(email, name);
+        const user = await db.getUserById(userId);
+        
+        // Generate JWT token
+        const token = generateToken({ id: user.id, email: user.email, name: user.name });
+        
+        res.json({
+            success: true,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name
+            },
+            token: token
+        });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ error: 'Registration failed' });
+    }
+});
+
+// User login endpoint
+app.post('/api/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required' });
+        }
+        
+        // Get user by email
+        const user = await db.getUserByEmail(email);
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        
+        // TODO: Add password hashing and verification
+        // For now, we'll just check if user exists
+        
+        // Generate JWT token
+        const token = generateToken({ id: user.id, email: user.email, name: user.name });
+        
+        res.json({
+            success: true,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name
+            },
+            token: token
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: 'Login failed' });
+    }
+});
 
 // Verify token endpoint
 app.post('/api/verify-token', (req, res) => {
@@ -447,25 +536,46 @@ app.post('/api/verify-token', (req, res) => {
     }
 });
 
-// Get accounts endpoint
-app.get('/api/accounts', async (req, res) => {
+// Get user's bank accounts
+app.get('/api/user/accounts', async (req, res) => {
     try {
-        const { access_token } = req.query;
+        const { userId } = req.query;
         
-        if (!access_token) {
-            return res.status(400).json({ error: 'access_token is required' });
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
         }
 
-        console.log('🏦 Fetching accounts for access token:', access_token ? 'present' : 'missing');
+        console.log('🏦 Fetching bank accounts for user:', userId);
         
-        const response = await plaidClient.accountsGet({ access_token });
-        console.log('✅ Accounts fetched successfully');
+        const accounts = await db.getBankAccounts(userId);
+        console.log('✅ User accounts fetched successfully');
         
-        res.json(response.data);
+        res.json({ success: true, accounts: accounts });
     } catch (error) {
-        console.error('❌ Error fetching accounts:', error);
-        res.status(500).json({ error: 'Failed to fetch accounts' });
-  }
+        console.error('❌ Error fetching user accounts:', error);
+        res.status(500).json({ error: 'Failed to fetch user accounts' });
+    }
+});
+
+// Get user's transactions
+app.get('/api/user/transactions', async (req, res) => {
+    try {
+        const { userId, limit = 100 } = req.query;
+        
+        if (!userId) {
+            return res.status(400).json({ error: 'userId is required' });
+        }
+
+        console.log('💳 Fetching transactions for user:', userId);
+        
+        const transactions = await db.getTransactions(userId, limit);
+        console.log('✅ User transactions fetched successfully');
+        
+        res.json({ success: true, transactions: transactions });
+    } catch (error) {
+        console.error('❌ Error fetching user transactions:', error);
+        res.status(500).json({ error: 'Failed to fetch user transactions' });
+    }
 });
 
 // Get transactions endpoint
